@@ -239,12 +239,21 @@ On the client side (JavaScript), we can use the **abp.features** namespace
 to get the current values of features.
 
 ##### isEnabled
-
+```csharp
     var isEnabled = abp.features.isEnabled('SampleBooleanFeature');
-
+```
 ##### getValue
-
+```csharp
     var value = abp.features.getValue('SampleNumericFeature');
+```
+
+#### Ignore Feature Check For Host Users
+
+If you enabled Multi-Tenancy, then you can also ignore feature check for host users by configuring it in PreInitialize method of our module as shown below:
+
+    Configuration.MultiTenancy.IgnoreFeatureCheckForHostUsers = true;
+    
+**Note:** `IgnoreFeatureCheckForHostUsers` default value is `false`;
 
 ### Feature Manager
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using Abp.Domain.Entities.Auditing;
 
@@ -51,7 +50,7 @@ namespace Abp.Authorization.Users
         {
         }
 
-        public void SetNormalizedNames()
+        public virtual void SetNormalizedNames()
         {
             NormalizedUserName = UserName.ToUpperInvariant();
             NormalizedEmailAddress = EmailAddress.ToUpperInvariant();

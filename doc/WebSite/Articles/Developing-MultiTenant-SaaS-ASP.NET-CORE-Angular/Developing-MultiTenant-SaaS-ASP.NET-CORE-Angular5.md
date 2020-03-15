@@ -48,7 +48,7 @@ This is a localized UI with a dynamic menu. Angular layout, routing and basic in
 
 In this article, I will show key parts of the project and explain it. So, please download the sample project, open in **Visual Studio 2017+** and run migrations just like above before reading rest of the article (Be sure that there is no database named EventCloud before running the migrations). I will follow some **DDD (Domain Driven Design)** techniques to create domain (business) layer and application layer.
 
-Event Cloud is a free SaaS (multi-tenant) application. We can create a tenant which has it's own events, users, roles... There are some simple business rules applied while creating, canceling and registering to an event.
+Event Cloud is a free SaaS (multi-tenant) application. We can create a tenant which has its own events, users, roles... There are some simple business rules applied while creating, canceling and registering to an event.
 
 So, let's start to investigate the source code.
 
@@ -502,7 +502,7 @@ public class EventAppService : EventCloudAppServiceBase, IEventAppService
             .Take(64)
             .ToListAsync();
 
-        return new ListResultDto<EventListDto>(events.MapTo<List<EventListDto>>());
+        return new ListResultDto<EventListDto>(ObjectMapper.MapTo<List<EventListDto>>(events));
     }
 
     public async Task<EventDetailOutput> GetDetailAsync(EntityDto<Guid> input)
@@ -519,7 +519,7 @@ public class EventAppService : EventCloudAppServiceBase, IEventAppService
             throw new UserFriendlyException("Could not found the event, maybe it's deleted.");
         }
 
-        return @event.MapTo<EventDetailOutput>();
+        return ObjectMapper.MapTo<EventDetailOutput>(@event);
     }
 
     public async Task CreateAsync(CreateEventInput input)
@@ -767,13 +767,13 @@ export class SideBarNavComponent extends AppComponentBase {
         new MenuItem(this.l("Roles"), "Pages.Roles", "local_offer", "/app/roles"),
         new MenuItem(this.l("Events"), "Pages.Events", "event", "/app/events"),
         new MenuItem(this.l("About"), "", "info", "/app/about"),
-        
+
 ...        
 ```
 
 #### Angular Route
 
-Defining the menu only shows it on the page. Angular has it's own route system. Routes are defined in app-routing-module.ts as shown below:
+Defining the menu only shows it on the page. Angular has its own route system. Routes are defined in app-routing-module.ts as shown below:
 
 ```ts
 import { NgModule } from '@angular/core';
@@ -946,7 +946,7 @@ public class EventAppService_Tests : EventCloudTestBase
 
 We use xUnit as test framework. In the first test, we simply create an event and check database if it's in there. In the second test, we intentionally trying to create an event in the past. Since our business rule don't allow it, we should get an exception here.
 
-With such tests, we tested everyting starting from application service including all aspects of **ASP.NET Boilerplate** (like validation, unit of work and so on). 
+With such tests, we tested everything starting from application service including all aspects of **ASP.NET Boilerplate** (like validation, unit of work and so on).
 
 ### Token Based Authentication
 

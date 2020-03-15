@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Web;
@@ -10,7 +11,7 @@ namespace Abp.Auditing
     {
         public string BrowserInfo => GetBrowserInfo();
 
-        public string ClientIpAddress => GetClientIpAddress();
+        public string ClientIpAddress => GetClientIpAddress()?.ToString();
 
         public string ComputerName => GetComputerName();
 
@@ -26,7 +27,7 @@ namespace Abp.Auditing
 
         protected virtual string GetBrowserInfo()
         {
-            var httpContext = HttpContext.Current;
+            var httpContext = GetCurrentHttpContext();
             if (httpContext?.Request.Browser == null)
             {
                 return null;
@@ -37,33 +38,42 @@ namespace Abp.Auditing
                    httpContext.Request.Browser.Platform;
         }
 
-        protected virtual string GetClientIpAddress()
+        protected virtual IPAddress GetClientIpAddress()
         {
-            var httpContext = HttpContext.Current;
+            var httpContext = GetCurrentHttpContext();
             if (httpContext?.Request.ServerVariables == null)
             {
                 return null;
             }
 
-            var clientIp = httpContext.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ??
-                           httpContext.Request.ServerVariables["REMOTE_ADDR"];
+            IPAddress clientIpAddress = null;
 
             try
             {
-                foreach (var hostAddress in Dns.GetHostAddresses(clientIp))
+                // Header Format => X-Forwarded-For: <client>, <proxy1>, <proxy2>
+                // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-For
+                // X_FORWARDED_FOR header is being prefixed with HTTP
+                // https://docs.microsoft.com/en-us/previous-versions/iis/6.0-sdk/ms524602(v=vs.90)#obtaining-server-variables
+                var forwardIpAddress = httpContext.Request.ServerVariables["HTTP_X_FORWARDED_FOR"]?.Split(',').FirstOrDefault();
+                if (!string.IsNullOrWhiteSpace(forwardIpAddress))
                 {
-                    if (hostAddress.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        return hostAddress.ToString();
-                    }
+                    clientIpAddress = IPEndPointHelper.Parse(forwardIpAddress).Address;
                 }
 
-                foreach (var hostAddress in Dns.GetHostAddresses(Dns.GetHostName()))
+                // Remote Ip Address is separated into REMOTE_ADDR & REMOTE_PORT
+                var remoteIpAddress = httpContext.Request.ServerVariables["REMOTE_ADDR"];
+                if (clientIpAddress == null && !string.IsNullOrWhiteSpace(remoteIpAddress))
                 {
-                    if (hostAddress.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        return hostAddress.ToString();
-                    }
+                    clientIpAddress = IPAddress.Parse(remoteIpAddress);
+                }
+
+                if (clientIpAddress == null && httpContext.Request.IsLocal)
+                {
+                    clientIpAddress = Dns.GetHostAddresses(Dns.GetHostName()).FirstOrDefault(address =>
+                        {
+                            return address.AddressFamily.HasFlag(AddressFamily.InterNetwork | AddressFamily.InterNetworkV6);
+                        }
+                    );
                 }
             }
             catch (Exception ex)
@@ -71,12 +81,12 @@ namespace Abp.Auditing
                 Logger.Debug(ex.ToString());
             }
 
-            return clientIp;
+            return clientIpAddress;
         }
 
         protected virtual string GetComputerName()
         {
-            var httpContext = HttpContext.Current;
+            var httpContext = GetCurrentHttpContext();
             if (httpContext == null || !httpContext.Request.IsLocal)
             {
                 return null;
@@ -84,14 +94,17 @@ namespace Abp.Auditing
 
             try
             {
-                var clientIp = httpContext.Request.ServerVariables["HTTP_X_FORWARDED_FOR"] ??
-                               httpContext.Request.ServerVariables["REMOTE_ADDR"];
-                return Dns.GetHostEntry(IPAddress.Parse(clientIp)).HostName;
+                return Dns.GetHostEntry(GetClientIpAddress()).HostName;
             }
             catch
             {
                 return null;
             }
+        }
+
+        public virtual HttpContextBase GetCurrentHttpContext()
+        {
+            return HttpContext.Current == null ? null : new HttpContextWrapper(HttpContext.Current);
         }
     }
 }
