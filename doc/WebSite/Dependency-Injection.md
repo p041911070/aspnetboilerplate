@@ -2,7 +2,7 @@
 
 If you already know the Dependency Injection, Constructor and
 Property Injection pattern concepts, you can skip to the [next
-section](#abpInfrastructure).
+section](#asp-net-boilerplate-dependency-injection-infrastructure).
 
 Wikipedia says: "*Dependency injection is a software design pattern in
 which one or more dependencies (or services) are injected, or passed by
@@ -29,19 +29,19 @@ the following example:
     public class PersonAppService
     {
         private IPersonRepository _personRepository;
-
+    
         public PersonAppService()
         {
             _personRepository = new PersonRepository();            
         }
-
+    
         public void CreatePerson(string name, int age)
         {
             var person = new Person { Name = name, Age = age };
             _personRepository.Insert(person);
         }
     }
-                
+
 
 **PersonAppService** uses **PersonRepository** to insert a **Person** into
 the database. Although this looks harmless, there are some problems with this code:
@@ -72,19 +72,19 @@ the creation of the repository class is abstracted. See the code below:
     public class PersonAppService
     {
         private IPersonRepository _personRepository;
-
+    
         public PersonAppService()
         {
             _personRepository = PersonRepositoryFactory.Create();            
         }
-
+    
         public void CreatePerson(string name, int age)
         {
             var person = new Person { Name = name, Age = age };
             _personRepository.Insert(person);
         }
     }
-                
+
 
 PersonRepositoryFactory is a static class that creates and returns an
 IPersonRepository. This is known as the **Service Locator** pattern.
@@ -111,19 +111,19 @@ The example above can be re-written as shown below:
     public class PersonAppService
     {
         private IPersonRepository _personRepository;
-
+    
         public PersonAppService(IPersonRepository personRepository)
         {
             _personRepository = personRepository;
         }
-
+    
         public void CreatePerson(string name, int age)
         {
             var person = new Person { Name = name, Age = age };
             _personRepository.Insert(person);
         }
     }
-                
+
 
 This is known as **constructor injection**. PersonAppService does
 not know which classes implement IPersonRepository or how it is created.
@@ -132,7 +132,7 @@ and pass it to the constructor of the PersonAppService:
 
     var repository = new PersonRepository();
     var personService = new PersonAppService(repository);
-    personService.CreatePerson("Yunus Emre", 19);
+    personService.CreatePerson("John Doe", 32);
 
 Constructor Injection is a great way of making a class independent to the
 creation of dependent objects, but there are some problems with the code
@@ -147,8 +147,7 @@ above:
     and so on and so forth.. We might not even be able to create a single object
     because the dependency graph is too complex!
 
-Fortunately, there are [Dependency Injection
-frameworks](#dIFrameworks), which automate the management of dependencies.
+Fortunately, there are [Dependency Injection frameworks](#dependency-injection-frameworks), which automate the management of dependencies.
 
 ##### Property Injection pattern
 
@@ -167,15 +166,15 @@ to logs in PersonAppService. We can re-write the class like this:
     public class PersonAppService
     {
         public ILogger Logger { get; set; }
-
+    
         private IPersonRepository _personRepository;
-
+    
         public PersonAppService(IPersonRepository personRepository)
         {
             _personRepository = personRepository;
             Logger = NullLogger.Instance;
         }
-
+    
         public void CreatePerson(string name, int age)
         {
             Logger.Debug("Inserting a new person to database with name = " + name);
@@ -192,7 +191,7 @@ set the Logger property after creating the PersonAppService object:
 
     var personService = new PersonAppService(new PersonRepository());
     personService.Logger = new Log4NetLogger();
-    personService.CreatePerson("Yunus Emre", 19);
+    personService.CreatePerson("John Doe", 32);
 
 Assume that Log4NetLogger implements ILogger and it writes logs using the
 Log4Net library so that PersonAppService can actually write logs. If we
@@ -213,7 +212,7 @@ framework. There will only be a few lines of code or classes that explicitly
 interact with the DI framework in your whole application.
 
 ASP.NET Boilerplate uses the [Castle
-Windsor](http://docs.castleproject.org/Default.aspx?Page=MainPage)
+Windsor](https://github.com/castleproject/Windsor/blob/master/docs/README.md)
 framework for Dependency Injection. It's one of the most mature DI
 frameworks out there. There are many other frameworks, such as Unity, Ninject,
 StructureMap, and Autofac.
@@ -223,14 +222,14 @@ interfaces/classes to the dependency injection framework, and then
 resolve (create) an object. In Castle Windsor, it's something like that:
 
     var container = new WindsorContainer();
-
+    
     container.Register(
             Component.For<IPersonRepository>().ImplementedBy<PersonRepository>().LifestyleTransient(),
             Component.For<IPersonAppService>().ImplementedBy<PersonAppService>().LifestyleTransient()
         );
-
+    
     var personService = container.Resolve<IPersonAppService>();
-    personService.CreatePerson("Yunus Emre", 19);
+    personService.CreatePerson("John Doe", 32);
 
 First, we created the **WindsorContainer** and **registered** 
 PersonRepository and PersonAppService with their interfaces. We then
@@ -243,7 +242,7 @@ objects, and is made only once during the application's startup.
 
 Note that we also set the **life cycle** of the objects as **transient**.
 This means that whenever we resolve an object of these types, a new instance
-is created. There are many different life cycles, such as the **singletion**, 
+is created. There are many different life cycles, such as the **singleton**, 
 for example.
 
 ### ASP.NET Boilerplate Dependency Injection Infrastructure
@@ -272,7 +271,7 @@ it:
     {
         //...
     }
-
+    
     public class PersonAppService : IPersonAppService
     {
         //...
@@ -313,14 +312,14 @@ should add it in pre-initialize method of your module.
 
 You may want to register a specific class that does not fit into the
 conventional registration rules. ASP.NET Boilerplate provides the
-**ITransientDependency** and the **ISingletonDependency** interfaces as a
+**ITransientDependency**, the **IPerWebRequestDependency** and the **ISingletonDependency** interfaces as a
 shortcut. For example:
 
     public interface IPersonManager
     {
         //...
     }
-
+    
     public class MyPersonManager : IPersonManager, ISingletonDependency
     {
         //...
@@ -332,6 +331,8 @@ dependency is declared as a **Singleton**. A single instance of
 MyPersonManager is created and the same object is passed to all needed
 classes. It's instantiated in it's first use, and then used in the
 whole life of the application.
+
+**NOTE:** The **IPerWebRequestDependency** can only be used in the web layer.
 
 ##### Custom/Direct Registration
 
@@ -372,15 +373,15 @@ Example:
     public class PersonAppService
     {
         public ILogger Logger { get; set; }
-
+    
         private IPersonRepository _personRepository;
-
+    
         public PersonAppService(IPersonRepository personRepository)
         {
             _personRepository = personRepository;
             Logger = NullLogger.Instance;
         }
-
+    
         public void CreatePerson(string name, int age)
         {
             Logger.Debug("Inserting a new person to database with name = " + name);
@@ -405,23 +406,23 @@ injected and used easily. Example:
     public class MySampleClass : ITransientDependency
     {
         private readonly IIocResolver _iocResolver;
-
+    
         public MySampleClass(IIocResolver iocResolver)
         {
             _iocResolver = iocResolver;
         }
-
+    
         public void DoIt()
         {
             //Resolving, using and releasing manually
             var personService1 = _iocResolver.Resolve<PersonAppService>();
-            personService1.CreatePerson(new CreatePersonInput { Name = "Yunus", Surname = "Emre" });
+            personService1.CreatePerson(new CreatePersonInput { Name = "John", Surname = "Doe" });
             _iocResolver.Release(personService1);
-
+    
             //Resolving and using in a safe way
             using (var personService2 = _iocResolver.ResolveAsDisposable<PersonAppService>())
             {
-                personService2.Object.CreatePerson(new CreatePersonInput { Name = "Yunus", Surname = "Emre" });
+                personService2.Object.CreatePerson(new CreatePersonInput { Name = "John", Surname = "Doe" });
             }
         }
     }
@@ -471,6 +472,22 @@ IShouldInitialize has an Initialize() method. If you implement it, then
 your Initialize() method is automatically called just after creating
 your object (before it's used). You need to inject/resolve the object
 in order to work with this feature.
+
+##### `Lazy<T>` components
+
+In order to resolve components lazily, register ```LazyOfTComponentLoader``` in the Initialize of a method as shown below;
+
+```c#
+public override void Initialize()
+{
+    IocManager.RegisterAssemblyByConvention(typeof(AbpZeroTestModule).GetAssembly());
+    IocManager.IocContainer.Register(
+        Component.For<ILazyComponentLoader>().ImplementedBy<LazyOfTComponentLoader>()
+    );
+}
+```
+
+Then, you can resolve any service using ```Lazy<ISomeService>``` in your app. This service will be lazily resolved when the first time you access `lazy.Value` property.
 
 #### ASP.NET MVC & ASP.NET Web API integration
 

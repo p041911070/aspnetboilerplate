@@ -60,7 +60,7 @@ It's a regular DbContext class except with the following rules:
 -   It's derived from **AbpDbContext** instead of DbContext.
 -   It should have the constructors like the sample above (constructor
     parameter names should also be the same). Explanation:
-    -   The **Default** consturctor passes "Default" to the base bass as the
+    -   The **Default** constructor passes "Default" to the base class as the
         connection string. It expects a "Default" named connection
         string in the web.config/app.config file. This constructor is
         not used by ABP, but used by the EF command-line migration tool
@@ -162,7 +162,7 @@ TPrimaryKey&gt;? This sets ASP.NET Boilerplate to use the
 SimpleTaskSystemDbContext in our repositories.
 
 By default, all the repositories for your given DbContext
-(SimpleTaskSystemDbContext in this example) is implemented using
+(SimpleTaskSystemDbContext in this example) are implemented using
 EfRepositoryBase. You can replace it to your own base
 repository class by adding the **AutoRepositoryTypes** attribute to your
 DbContext as shown below:
@@ -252,7 +252,7 @@ from any project without actually referencing EF.
 ASP.NET Boilerplate has a built-in [unit of work](Unit-Of-Work.md)
 system to manage database connection and transactions. Entity framework
 has different [transaction management
-approaches](https://msdn.microsoft.com/en-us/library/dn456843(v=vs.113).aspx).
+approaches](https://learn.microsoft.com/en-us/ef/ef6/saving/transactions?redirectedfrom=MSDN).
 ASP.NET Boilerplate uses the ambient TransactionScope approach by default,
 but it also has a built-in implementation for the DbContext transaction API. If
 you want to switch to the DbContext transaction API, you can configure it in the

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Abp.Reflection
 {
@@ -159,6 +160,33 @@ namespace Abp.Reflection
         }
 
         /// <summary>
+        /// Gets a property by it's full path from given object
+        /// </summary>
+        /// <param name="obj">Object to get value from</param>
+        /// <param name="objectType">Type of given object</param>
+        /// <param name="propertyPath">Full path of property</param>
+        /// <returns></returns>
+        internal static object GetPropertyByPath(object obj, Type objectType, string propertyPath)
+        {
+            var property = obj;
+            var currentType = objectType;
+            var objectPath = currentType.FullName;
+            var absolutePropertyPath = propertyPath;
+            if (absolutePropertyPath.StartsWith(objectPath))
+            {
+                absolutePropertyPath = absolutePropertyPath.Replace(objectPath + ".", "");
+            }
+
+            foreach (var propertyName in absolutePropertyPath.Split('.'))
+            {
+                property = currentType.GetProperty(propertyName);
+                currentType = ((PropertyInfo) property).PropertyType;
+            }
+
+            return property;
+        }
+
+        /// <summary>
         /// Gets value of a property by it's full path from given object
         /// </summary>
         /// <param name="obj">Object to get value from</param>
@@ -185,7 +213,7 @@ namespace Abp.Reflection
 
             return value;
         }
-
+        
         /// <summary>
         /// Sets value of a property by it's full path on given object
         /// </summary>
@@ -222,6 +250,29 @@ namespace Abp.Reflection
 
             property = currentType.GetProperty(properties.Last());
             property.SetValue(obj, value);
+        }
+
+        internal static bool IsPropertyGetterSetterMethod(MethodInfo method, Type type)
+        {
+            if (!method.IsSpecialName)
+            {
+                return false;
+            }
+
+            if (method.Name.Length < 5)
+            {
+                return false;
+            }
+
+            return type.GetProperty(method.Name.Substring(4), BindingFlags.Instance | BindingFlags.Static | BindingFlags.NonPublic) != null;
+        }
+        
+        internal static async Task<object> InvokeAsync(MethodInfo method, object obj, params object[] parameters)
+        {
+            var task = (Task)method.Invoke(obj, parameters);
+            await task;
+            var resultProperty = task.GetType().GetProperty("Result");
+            return resultProperty?.GetValue(task);
         }
     }
 }

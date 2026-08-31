@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Reflection;
+﻿using Castle.DynamicProxy;
+using System;
 
 namespace Abp.Reflection
 {
@@ -10,21 +10,15 @@ namespace Abp.Reflection
         /// </summary>
         public static object UnProxy(object obj)
         {
-            if (obj.GetType().Namespace != "Castle.Proxies")
-            {
-                return obj;
-            }
+            return ProxyUtil.GetUnproxiedInstance(obj);
+        }
 
-            var targetField = obj.GetType()
-                .GetFields(BindingFlags.Instance | BindingFlags.NonPublic)
-                .FirstOrDefault(f => f.Name == "__target");
-
-            if (targetField == null)
-            {
-                return obj;
-            }
-
-            return targetField.GetValue(obj);
+        /// <summary>
+        /// Returns the type of the dynamic proxy target object if this is a proxied object, otherwise returns the type of the given object.
+        /// </summary>
+        public static Type GetUnproxiedType(object obj)
+        {
+            return ProxyUtil.GetUnproxiedType(obj);
         }
     }
 }

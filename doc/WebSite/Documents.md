@@ -10,7 +10,7 @@ Overall
 -   [Multi-Tenancy](Multi-Tenancy.md)
 -   [OWIN Integration](OWIN.md)
 -   [Debugging](Debugging.md)
--   [API Reference](/api-docs/index.html)
+-   [API Reference](https://aspnetboilerplate.com/api-docs/api/index.html)
 
 Common Structures
 
@@ -22,10 +22,12 @@ Common Structures
 -   [Timing](Timing.md)
 -   [Object To Object Mapping (and AutoMapper Integration)](Object-To-Object-Mapping.md)
 -   [Email Sending (and MailKit Integration)](Email-Sending.md)
+-   [BLOB Storage](BLOB-Storing.md)
 
 Domain Layer
 
 -   [Entities](Entities.md)
+    -   [Multi-Lingual Entities](Multi-Lingual-Entities.md)
 -   [Value Objects](Value-Objects.md)
 -   [Repositories](Repositories.md)
 -   [Domain Services](Domain-Services.md)
@@ -33,6 +35,8 @@ Domain Layer
 -   [Unit Of Work](Unit-Of-Work.md)
 -   [Domain Events (EventBus)](EventBus-Domain-Events.md)
 -   [Data Filters](Data-Filters.md)
+-   [Dynamic Property System](Dynamic-Parameter-System.md)
+-   [Object Comparators](ObjectComparators.md)
 
 Application Layer
 
@@ -42,7 +46,7 @@ Application Layer
 -   [Authorization](Authorization.md)
 -   [Feature Management](Feature-Management.md)
 -   [Audit Logging](Audit-Logging.md)
--   [Entity History](Entity-History.md) <label class="label label-success">NEW</label>
+-   [Entity History](Entity-History.md)
 
 Distributed Service Layer
 
@@ -60,12 +64,13 @@ Presentation Layer
     -   [Handling Exceptions](Handling-Exceptions.md)
 -   ASP.NET Core
     -   [ASP.NET Core Integration](AspNet-Core.md)
-    -   [ASP.NET Core OData Integration](OData-AspNetCore-Integration.md) <label class="label label-success">NEW</label>
+    -   [ASP.NET Core OData Integration](OData-AspNetCore-Integration.md)
 -   [Localization](Localization.md)
 -   [Navigation](Navigation.md)
 -   [Embedded Resources](Embedded-Resource-Files.md)
 -   [Javascript API](/Pages/Documents/Javascript-API)
 -   [CSRF/XSRF Protection](XSRF-CSRF-Protection.md)
+-   [Alerts](UI-Alerts.md)
 
 Background Services
 
@@ -77,7 +82,8 @@ Real Time Services
 
 -   [Notification System](Notification-System.md)
 -   [SignalR Integration](SignalR-Integration.md)
--   [SignalR ASP.NET Core Integration](SignalR-AspNetCore-Integration.md) <label class="label label-success">NEW</label>
+-   [SignalR ASP.NET Core Integration](SignalR-AspNetCore-Integration.md)
+-   [Webhooks](Webhook-System.md)
 
 Object-Relational Mapping
 
@@ -89,6 +95,7 @@ Object-Relational Mapping
 Releases
 
 -   [Nuget Packages](Nuget-Packages.md)
+-   [Nightly Builds](Nightly-Builds.md)
 -   [Change Logs & Releases](https://github.com/aspnetboilerplate/aspnetboilerplate/releases)
 
 ### Module Zero
@@ -97,7 +104,7 @@ Releases
 -   Startup Templates
     -   [ASP.NET Core & Angular](Zero/Startup-Template-Angular.md)
     -   [ASP.NET Core MVC & jQuery](Zero/Startup-Template-Core.md)
-    -   [ASP.NET MVC 5.x / Angularjs 1.x](Zero/Startup-Template.md)
+    -   [ASP.NET MVC 5.x / AngularJS 1.x](Zero/Startup-Template.md)
 -   Features
     -   [Tenant Management](/Pages/Documents/Zero/Tenant-Management)
     -   [Edition Management](/Pages/Documents/Zero/Edition-Management)
@@ -106,7 +113,7 @@ Releases
     -   [Organization Unit Management](/Pages/Documents/Zero/Organization-Units)
     -   [Permission Management](/Pages/Documents/Zero/Permission-Management)
     -   [Language Management](/Pages/Documents/Zero/Language-Management)
-    -   [Identity Server Integration](Zero/Identity-Server.md)
+    -   [Identity Server Integration](Zero/Identity-Server-vNext.md)
 -   Releases
     -   [Nuget Packages](/Pages/Documents/Zero/Nuget-Packages)
     -   [Change Logs & Releases](https://github.com/aspnetboilerplate/module-zero/releases)
@@ -116,4 +123,4 @@ Releases
 -   Chinese translations of ABP's documentation (thanks to all contributors)
     -   Source 1: [cnblogs.com/farb/p/ABPTheory.html](http://www.cnblogs.com/farb/p/ABPTheory.html)
     -   Source 2: [cnblogs.com/mienreal](http://www.cnblogs.com/mienreal/p/4528470.html)
-    -   Github: [github.com/ABPFrameWorkGroup/AbpDocument2Chinese](https://github.com/ABPFrameWorkGroup/AbpDocument2Chinese)
+    -   GitHub: [github.com/ABPFrameWorkGroup/AbpDocument2Chinese](https://github.com/ABPFrameWorkGroup/AbpDocument2Chinese)

@@ -1,7 +1,7 @@
 ### Introduction
 
-The easiest way of starting a new project using ABP with **ASP.NET Core** and **Angular** is to create a 
-template on the [download page](/Templates). After creating and downloading your project, follow the 
+The easiest way of starting a new project using ABP with **ASP.NET Core** and **Angular** is to create a
+template on the [download page](/Templates). After creating and downloading your project, follow the
 below steps to run your application.
 
 ### ASP.NET Core Application
@@ -17,7 +17,7 @@ below steps to run your application.
 
 <img src="../images/swagger-ui-module-zero-core-template.png" alt="Swagger UI" class="img-thumbnail" />
 
-In this template, **multi-tenancy is enabled by default**. If you don't 
+In this template, **multi-tenancy is enabled by default**. If you don't
 need it, you can disable it in the Core project's module class.
 
 If you have problems with running the application, close and then re-open
@@ -67,9 +67,9 @@ at development time:
 
 #### Login
 
-You can now login to the application using the default credentials. The default user's name
+You can now login to the application using the default credentials. The default username
 is '**admin**' and the password is '**123qwe**'. If you want to
-login as a tenant, you need to first switch to that tenant on the login page. By default, there 
+login as a tenant, you need to first switch to that tenant on the login page. By default, there
 is a tenant named "Default". Once you login successfully, you will
 see a dashboard:
 
@@ -81,9 +81,13 @@ actual dashboard.
 #### Deployment of Angular Application
 
 We used the **angular-cli** tooling to build an Angular solution. You can use the
-`ng build -prod` command to publish your project. It publishes to the **dist**
+`ng build --prod` command to publish your project. It publishes to the **dist**
 folder by default. You can then host this folder on IIS or any web
 server you like.
+
+##### Merged Project
+
+If you have merged Angular UI project into ASP.NET Core project then you only need to publish your .Host project. After publish .Host project, you should copy files that are in .Host/wwwroot/dist folder to publish_folder/wwwroot. For example: Move files in .Host/wwwroot/dist to C:\inetpub\wwwroot\my-website\wwwroot
 
 ### Solution Details & Other Features
 
@@ -143,7 +147,7 @@ This application gets the host connection string from its **own
 appsettings.json file**. In the beginning, it will be the same as the appsettings.json
 in the .Web.Host project. Be sure that the connection string
 in the config file is the database you want. After getting the **host**
-**connection sring**, it first creates the host database and then applies the
+**connection string**, it first creates the host database and then applies the
 migrations if they don't already exist. It then gets the connection strings of
 the tenant databases and runs the migrations for those databases. It skips a
 tenant if it does not have a dedicated database or if the database has already
@@ -162,7 +166,21 @@ easily. Actually, they are integration tests rather than unit tests
 since they test your code with all of ASP.NET Boilerplate's infrastructure
 (including validation, authorization, unit of work...).
 
+### Running on Docker
+
+The startup template includes necesary files for building docker images and running those images in docker.
+
+#### Building Docker images
+
+In order to build docker image, open the command prompt, go to `aspnet-core/build` folder and run `build-with-ng.ps1` script. This script will build `abp/host` and `abp/ng` docker images.
+The default `abp/host` image is designed to use your local SQL Server, so don't foget to set `ConnectionStrings__Default` in `aspnet-core/docker/ng/docker-compose.yml` before building the docker image. In order to connect your local SQL Server, you need to use your local IP address in the connection string. 
+A sample connection string is `ConnectionStrings__Default: "Server=192.168.1.42; Database=AbpProjectNameDb; User=sa; Password=123qwe;TrustServerCertificate=True;"`
+
+#### Running the project
+
+After creating the docker image, you can go to `aspnet-core/docker/ng` folder and run `up.ps1` script to run the docker image.
+
 ### Source Code
 
-This template is developed as an open source project and is available for free at Github:
+This template is developed as an open source project and is available for free on GitHub:
 <https://github.com/aspnetboilerplate/module-zero-core-template>

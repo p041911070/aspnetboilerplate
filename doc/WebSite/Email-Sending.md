@@ -50,13 +50,13 @@ and MailMessage). Using IEmailSender will be enough for most cases.
 There is also a [null object
 pattern](https://en.wikipedia.org/wiki/Null_Object_pattern)
 implementation of IEmailSender, aptly named **NullEmailSender**. You can use it in
-unit tests or inject IEmalSender with the [property
+unit tests or inject IEmailSender with the [property
 injection](Dependency-Injection.md) pattern.
 
 ### Configuration
 
 Email Sender uses a [settings management](Setting-Management.md) system
-to read emal-sending configurations. All the setting names are defined in the
+to read email-sending configurations. All the setting names are defined in the
 Abp.Net.Mail.EmailSettingNames class as constant strings. 
 
 Their values and descriptions:

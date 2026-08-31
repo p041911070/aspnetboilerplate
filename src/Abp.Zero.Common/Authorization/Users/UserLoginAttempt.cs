@@ -22,7 +22,7 @@ namespace Abp.Authorization.Users
         /// <summary>
         /// Max length of the <see cref="TenancyName"/> property.
         /// </summary>
-        public const int MaxUserNameOrEmailAddressLength = 255;
+        public const int MaxUserNameOrEmailAddressLength = AbpUserBase.MaxEmailAddressLength;
 
         /// <summary>
         /// Maximum length of <see cref="ClientIpAddress"/> property.
@@ -37,7 +37,12 @@ namespace Abp.Authorization.Users
         /// <summary>
         /// Maximum length of <see cref="BrowserInfo"/> property.
         /// </summary>
-        public const int MaxBrowserInfoLength = 256;
+        public const int MaxBrowserInfoLength = 512;
+
+        /// <summary>
+        /// Maximum length of <see cref="ClientName"/> property.
+        /// </summary>
+        public const int MaxFailReasonLength = 1024;
 
         /// <summary>
         /// Tenant's Id, if <see cref="TenancyName"/> was a valid tenant name.
@@ -47,7 +52,7 @@ namespace Abp.Authorization.Users
         /// <summary>
         /// Tenancy name.
         /// </summary>
-        [MaxLength(MaxTenancyNameLength)]
+        [StringLength(MaxTenancyNameLength)]
         public virtual string TenancyName { get; set; }
 
         /// <summary>
@@ -58,31 +63,33 @@ namespace Abp.Authorization.Users
         /// <summary>
         /// User name or email address
         /// </summary>
-        [MaxLength(MaxUserNameOrEmailAddressLength)]
+        [StringLength(MaxUserNameOrEmailAddressLength)]
         public virtual string UserNameOrEmailAddress { get; set; }
 
         /// <summary>
         /// IP address of the client.
         /// </summary>
-        [MaxLength(MaxClientIpAddressLength)]
+        [StringLength(MaxClientIpAddressLength)]
         public virtual string ClientIpAddress { get; set; }
 
         /// <summary>
         /// Name (generally computer name) of the client.
         /// </summary>
-        [MaxLength(MaxClientNameLength)]
+        [StringLength(MaxClientNameLength)]
         public virtual string ClientName { get; set; }
 
         /// <summary>
         /// Browser information if this method is called in a web request.
         /// </summary>
-        [MaxLength(MaxBrowserInfoLength)]
+        [StringLength(MaxBrowserInfoLength)]
         public virtual string BrowserInfo { get; set; }
 
         /// <summary>
         /// Login attempt result.
         /// </summary>
         public virtual AbpLoginResultType Result { get; set; }
+
+        [StringLength(MaxFailReasonLength)] public virtual string FailReason { get; set; }
 
         public virtual DateTime CreationTime { get; set; }
 
